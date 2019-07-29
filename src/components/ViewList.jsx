@@ -2,13 +2,18 @@ import React, { Component } from 'react'
 import Cabecera from './Cabecera'
 import Lista from './Lista'
 
-export default class ViewList extends Component{
-    render() {
+export default class ViewList extends Component {
+    render(){
+        const { data } = this.props        
         return (
             <div>
                 <Cabecera/>
-                <Lista/>
+                <Lista data={data}/>
             </div>            
         )
     }
 }
+
+
+
+        
