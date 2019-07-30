@@ -25,12 +25,21 @@ seleccionaUsuario = id => {
   })
 }
 
+nuevoUsuario = () => {
+  this.setState({
+    ruta: 'formulario'
+  })
+}
+
   render() {
     
     const { ruta, data } = this.state
     return (
        <div className = "App">
-       { ruta === 'lista' && <ViewList handleClick={this.seleccionaUsuario} data={data}/> }
+       { ruta === 'lista' && <ViewList 
+       nuevoUsuario = { this.nuevoUsuario}
+       handleClick = {this.seleccionaUsuario} 
+       data = {data}/> }
        { ruta === 'formulario' && <UserForm/> }
       </div> 
   );
