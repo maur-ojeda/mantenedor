@@ -9,7 +9,7 @@ import ViewList from './components/ViewList'
 class App extends Component {
   state = {
     data: [],
-    ruta: 'formulario',
+    ruta: 'lista',
   }
 
 constructor(){
@@ -25,24 +25,54 @@ seleccionaUsuario = id => {
   })
 }
 
-nuevoUsuario = () => {
-  this.setState({
-    ruta: 'formulario'
+agregarNuevoUsuario = usuario => {
+  axios.post('https://jsonplaceholder.typicode.com/users/',usuario)
+  .then(({ data }) => {
+    const newData = this.state.data.concat(data)
+    this.setState({
+      data: newData,
+      ruta: 'lista',
+    })
   })
 }
 
-  render() {
-    
-    const { ruta, data } = this.state
-    return (
-       <div className = "App">
-       { ruta === 'lista' && <ViewList 
-       nuevoUsuario = { this.nuevoUsuario}
-       handleClick = {this.seleccionaUsuario} 
-       data = {data}/> }
-       { ruta === 'formulario' && <UserForm/> }
-      </div> 
-  );
+
+actualizarNuevoUsuario = (id, values) => {
+  axios.put(`https://jsonplaceholder.typicode.com/users/${id}`, values)
+  .then(() => {
+      const newData = this.state.data.map( x => x.id === id ? values: x )
+      this.setState({
+        data: newData,
+        ruta: 'lista',
+      })
+    })
+}
+
+
+nuevoUsuario = () => {
+  this.setState({
+    ruta: 'formulario',
+    usuarioSeleccionado: undefined
+  })
+}
+render() {
+  
+  const { ruta, data, usuarioSeleccionado } = this.state
+  const valoresIniciales = usuarioSeleccionado && data.find( x => x.id === usuarioSeleccionado)
+
+  return (
+      <div className = "App">
+      { ruta === 'lista' && <ViewList 
+      nuevoUsuario = { this.nuevoUsuario}
+      handleClick = {this.seleccionaUsuario} 
+      data = {data}/> }
+      { ruta === 'formulario' && <UserForm
+      valoresIniciales={valoresIniciales || {}}
+      handleSubmit={this.agregarNuevoUsuario} 
+      handleUpdate={this.actualizarNuevoUsuario} 
+      /> }
+    </div> 
+);
 
   }
 }

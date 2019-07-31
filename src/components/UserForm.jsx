@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 
-const validate = values =>{
+const validate = values => {
     const errors = {}
-    if( !values.name ) {
+
+
+    if(!values.name ){
         errors.name = 'Este campo es obligatorio'
     }
     if( !values.email ) {
@@ -12,53 +14,68 @@ const validate = values =>{
         errors.website = 'Este campo es obligatorio'
     }
 
- return errors
-
-
+    return errors
 }
 
 
 export default class UserForm extends Component {
+   
     state = {
         errors: {}
     }
+    
+    constructor(props) {
+        super(props)
+        this.state = {
+            ...this.state,
+            ...props.valoresIniciales,
+        }
+    }
 
     handleChange = ({ target }) => {
-        this.setState = ({
+        this.setState({
             [target.name]: target.value, 
         })
     }
-    handleSubmit = e => {
 
+    
+    handleSubmit = e => {
         e.preventDefault()
         const { errors, ...sinErrors } = this.state
         const result = validate(sinErrors)
         this.setState({ errors: result })
-        
+
         if( !Object.keys(result).length ){
-            // envio del formulario
-            e.target.reset()
-        }
-       
+            const { handleSubmit,handleUpdate, valoresIniciales } = this.props
+            if (valoresIniciales.id) {
+                handleUpdate(valoresIniciales.id, sinErrors)
+            }else{
+                handleSubmit(sinErrors)
+            }
+        }  else {
+            this.setState({ errors: result })
+        }     
     }
 
     render() {
+
         const { errors } = this.state
-        //console.log(this.state )
+        const { valoresIniciales } = this.props
         return (
-           <form onSubmit={this.handleSubmit}>
-               <input placeholder="Nombre" name="name" onChange={this.handleChange}/>
+          <form onSubmit={this.handleSubmit}>
+               <input defaultValue={valoresIniciales.name} placeholder="Nombre" name="name" onChange={this.handleChange}/>
                { errors.name && <p>{errors.name}</p> }
 
-               <input placeholder="E-mail" name="email" onChange={this.handleChange}/>
+               <input defaultValue={valoresIniciales.email} placeholder="E-mail" name="email" onChange={this.handleChange}/>
                { errors.email && <p>{errors.email}</p> }
 
-               <input placeholder="Sitio web" name="website" onChange={this.handleChange}/>
+               <input defaultValue={valoresIniciales.website} placeholder="Sitio web" name="website" onChange={this.handleChange}/>
                { errors.website && <p>{errors.website}</p> }
 
                <input type="submit" value="Enviar"/>
 
            </form>
+        
         )
     }
 }
